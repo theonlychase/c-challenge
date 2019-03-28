@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coding Challenge</title>
+  <!-- Bulma CSS Library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <!-- Custom Styling -->
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a href="/" class="navbar-item">
+          CODING CHALLENGE
+        </a>
+      </div>
+    </div>
+  </nav>
+  <section class="section">
+    <div class="container">
+      <div class="columns has-text-centered">
+        <div id="btns" class="column is-12-mobile">
+          <h4 class="title is-4">Click a button to display male or female data!</h4>
+          <a id="male" class="button is-large is-link is-outlined">Male</a>
+          <a id="female" class="button is-large is-danger is-outlined">Female</a>
+        </div>
+      </div>
+      <!-- Container to display Males/Female data in columns -->
+      <div id="list" class="columns is-multiline is-mobile">
+      </div>
+  </section>
+</body>
+
+</html>
+
+<script>
+  // Loading Spinner
+  const loader = `<div class="loader"></div>`;
+
+  // Add event listener
+  var el = document.getElementById('btns');
+  el.addEventListener("click", getData, false);
+
+  function getData(e) {
+
+    // Get id of element
+    let id = e.target.id;
+
+    // Check if the id matches
+    if (id === "male" || id === "female") {
+
+      // Add Loader while data is being fetched
+      document.getElementById('list').innerHTML = loader;
+
+      // Fetch data
+      fetch(`https://randomuser.me/api/?gender=${id}&results=9`)
+        .then(response => response.json())
+        .then(data => {
+          const results = data.results;
+
+          const markup = `
+            ${results.map(result => 
+              `<div class="column is-4-desktop is-12-mobile is-6-tablet">
+                <div class="card hvr-underline-from-center">
+                  <div class="card-content is-capitalized">
+                      <div class="media">
+                        <div class="media-left">
+                          <figure class="image is-48x48">
+                            <img src="${result.picture.large}" alt="Placeholder image">
+                          </figure>
+                        </div>
+                        <div class="media-content">
+                          <p class="title is-4">${result.name.first} ${result.name.last}</p>
+                          <a href="mailto:${result.email}" class="subtitle is-6">${result.email}</a>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>`
+            ).join("")}
+          `;
+          // Replace Loader Once the Data is returned 
+          document.getElementById("list").innerHTML = markup;
+        })
+        // Catch errors
+        .catch(err => {
+          console.error(err);
+        })
+    }
+  }
+</script>
